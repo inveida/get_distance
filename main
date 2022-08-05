@@ -1,0 +1,48 @@
+from numpy import sin, cos, arccos, pi, round
+import requests
+
+
+def rad2deg(radians):
+    degrees = radians * 180 / pi
+    return degrees
+
+
+def deg2rad(degrees):
+    radians = degrees * pi / 180
+    return radians
+
+
+def getdistance(latitude1, longitude1, latitude2, longitude2):
+    theta = longitude1 - longitude2
+
+    distance = 60 * 1.1515 * rad2deg(
+        arccos(
+            (sin(deg2rad(latitude1)) * sin(deg2rad(latitude2))) +
+            (cos(deg2rad(latitude1)) * cos(deg2rad(latitude2)) * cos(deg2rad(theta)))
+        )
+    )
+    print(f'расстояние {round(distance * 1.609344, 2)} километров')
+
+
+def shet(COORD, COORD2):
+    latitude1 = float(COORD[1])
+    longitude1 = float(COORD[0])
+    latitude2 = float(COORD2[1])
+    longitude2 = float(COORD2[0])
+    return getdistance(latitude1, longitude1, latitude2, longitude2)
+
+
+def main():
+    adress1 = input('введи первый адрес ')
+    adress2 = input('введи второй адрес ')
+    response = requests.get(
+        url=f'https://geocode-maps.yandex.ru/1.x/?apikey={your_key}&format=json&geocode={adress1}').json()
+    response2 = requests.get(
+        url=f'https://geocode-maps.yandex.ru/1.x/?apikey={your_key}&format=json&geocode={adress2}').json()
+    COORD = (response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']).split(' ')
+    COORD2 = (response2['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']).split(' ')
+    shet(COORD2=COORD2, COORD=COORD)
+
+
+if __name__ == '__main__':
+    main()
